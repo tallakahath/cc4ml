@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CC4ML</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: masthead with search + topic filters, then a responsive card grid of people */
+:root {
+  --bg: #f3f5f6;
+  --surface: #ffffff;
+  --fg: #16232b;
+  --muted: #5b6b74;
+  --line: #dbe2e6;
+  --accent: #0f6e78;
+  --accent-soft: #e0eff0;
+  --chip: #eaeef0;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1619; --surface: #162126; --fg: #e4ecef; --muted: #93a4ac; --line: #26353c;
+  --accent: #5cc6cf; --accent-soft: #173238; --chip: #1f2d33; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0f1619; --surface: #162126; --fg: #e4ecef; --muted: #93a4ac; --line: #26353c;
+  --accent: #5cc6cf; --accent-soft: #173238; --chip: #1f2d33; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 40px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header { display: grid; gap: 18px; margin-bottom: 28px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(34px, 6vw, 56px); line-height: 1; margin: 0; letter-spacing: -.02em; text-wrap: balance; }
+.sub { color: var(--muted); margin: 0; max-width: 62ch; }
+.controls { display: grid; gap: 12px; }
+.search { width: 100%; max-width: 520px; font: inherit; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
+.search:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font: 500 13px var(--body); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.count { font-family: var(--mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+@media (max-width: 400px) { .grid { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.top { display: flex; gap: 12px; align-items: center; min-width: 0; }
+.mono { flex: none; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font: 700 15px var(--display); }
+.who { min-width: 0; }
+.name { font: 700 18px/1.2 var(--display); margin: 0; }
+.aff { font-size: 13px; color: var(--muted); margin: 2px 0 0; }
+.interests { margin: 0; font-size: 14px; color: var(--fg); }
+.none { color: var(--muted); font-style: italic; }
+.foot { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-end; margin-top: auto; padding-top: 6px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font: 500 11px var(--mono); padding: 3px 8px; border-radius: 6px; background: var(--chip); color: var(--muted); }
+.links { display: flex; gap: 6px; }
+.links a { font: 500 12px var(--body); text-decoration: none; color: var(--accent); border: 1px solid var(--line); border-radius: 7px; padding: 4px 10px; }
+.links a:hover { background: var(--accent-soft); }
+.links a:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.empty { padding: 40px 0; color: var(--muted); }
+.lead { display: grid; gap: 2px; padding: 8px 10px; border-radius: 8px; background: var(--accent-soft); }
+.lead-k { font: 500 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.lead-t { font-size: 13px; font-weight: 600; color: var(--fg); }
+.sec { display: grid; gap: 14px; margin-bottom: 36px; }
+.sec-h { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+#sec-org .card { border-color: var(--accent); }
+
+/* Nav + schedule */
+.nav { display: flex; gap: 4px; padding: 4px; background: var(--chip); border-radius: 10px; width: fit-content; }
+.nav a { font: 600 14px var(--body); text-decoration: none; color: var(--muted); padding: 7px 16px; border-radius: 7px; }
+.nav a[aria-current="page"] { background: var(--surface); color: var(--fg); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.nav a:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.day { display: grid; gap: 10px; margin-bottom: 40px; }
+.day-h { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 0 0 6px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.day-h strong { font: 700 26px/1.1 var(--display); letter-spacing: -.01em; }
+.day-h span { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.slot { display: grid; grid-template-columns: 156px 1fr; gap: 16px; align-items: start; }
+.t { font: 500 13px var(--mono); color: var(--muted); padding-top: 14px; font-variant-numeric: tabular-nums; }
+.blk { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; gap: 4px; align-content: start; min-width: 0; }
+.blk.plenary { border-color: var(--accent); }
+.blk.meal { background: transparent; border-style: dashed; }
+.blk-k { font: 500 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.blk.meal .blk-k { color: var(--muted); }
+.blk-t { font: 700 17px/1.25 var(--display); margin: 0; }
+.blk.meal .blk-t { font: 600 15px var(--body); }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--muted); }
+.meta b { color: var(--fg); font-weight: 600; }
+.note { font-size: 12px; color: var(--accent); font-weight: 600; }
+.par { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; min-width: 0; }
+.parts { display: grid; gap: 2px; margin-top: 6px; padding-top: 8px; border-top: 1px dashed var(--line); font: 400 12px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+@media (max-width: 720px) {
+  .slot { grid-template-columns: 1fr; gap: 6px; }
+  .t { padding-top: 0; }
+  .par { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Coupled cluster for machine learning · November 5–6</div>
+    <nav class="nav" aria-label="Sections"><a href="#schedule" id="nav-schedule">Schedule</a><a href="#attendees" id="nav-attendees">Attendees</a></nav>
+  </header>
+  <div id="view-schedule">
+    <header>
+      <h1>CC4ML Schedule</h1>
+      <p class="sub">Two days of plenaries, parallel discussion sessions and regroups. Parallel sessions run in the 9th-floor MUR and the 8th-floor breakout room.</p>
+    </header>
+    <div id="sched"></div>
+  </div>
+  <div id="view-attendees">
+  <header>
+    <h1>CC4ML Attendees</h1>
+    <p class="sub">Who's coming and what they work on. Search by name, institution or topic.</p>
+    <div class="controls">
+      <input id="q" class="search" type="search" placeholder="Search names, institutions, topics…" aria-label="Search attendees">
+      <div class="count" id="count"></div>
+    </div>
+  </header>
+  <main>
+    <section id="sec-org" class="sec"><h2 class="sec-h">Organizers and Hosts</h2><div class="grid" id="grid-org"></div></section>
+    <section id="sec-lead" class="sec"><h2 class="sec-h">Discussion Co-Leads</h2><div class="grid" id="grid-lead"></div></section>
+    <section id="sec-att" class="sec"><h2 class="sec-h">Attendees</h2><div class="grid" id="grid"></div></section>
+  </main>
+  <p class="empty" id="empty" hidden>No attendees match that search.</p>
+  </div>
+</div>
+
+<script>
+const P = [
+  ["Sam Blau","NVIDIA / LBL","xKVBmgIAAAAJ","in/samuel-blau","Large-scale high-quality data generation, MLIP benchmarking against both theory and experiment, together enabling atomistic simulations that can drive actual discovery. Co-led OMol25."],
+  ["Gábor Csányi","Max Planck","q39javYAAAAJ","","I'm interested in making CC accurate ML force fields, as general as possible, as accurate as possible as widely applicable as possible. I organize the MACE force fields."],
+  ["Liz Decolvenaere","Achira","dOFL_xcAAAAJ","in/edecolvenaere","Non-covalent and many-body interactions in biochemical systems, and the QM methods which can accurately describe those interactions. Author of DES370K at DESRES, now MLIP pre-training lead at Achira."],
+  ["Stephen Klippenstein","Argonne National Laboratory","sWXlVG0AAAAJ","in/stephen-klippenstein-42435a2b2","High accuracy chemical kinetics. Using the information from prototype studies for small systems to generate similar quality large scale databases for large sets of reactions."],
+  ["Wen Yan","ByteDance","mFiX664AAAAJ","in/wen-yan-bb16b254",""],
+  ["Olexandr Isayev","Carnegie Mellon University","7ICaR4EAAAAJ","in/olexandr","I develop accurate, broadly applicable MLIPs focused on reactive chemistry and intermolecular interactions. I lead AIMNet2 ecosystem development."],
+  ["Stefan Grimme","Mulliken Center, University of Bonn","4BbpuOAAAAAJ","in/stefan-grimme-8332b6359","Development of DFT, TB, dispersion methods and training sets for relevant chemical space."],
+  ["Bernardo de Souza","FACCTs / ORCA Dev Team","U6szjgMAAAAJ","in/bernardodesouza","Part of the ORCA development team, with contributions all over the code. In the CC4ML context, worked on linear-scaling Fock matrix builders, the new SCF stability features and derived/implemented the new fully translation-invariant gradient algorithm necessary to help producing the OMOL25."],
+  ["Michael G. Taylor","Los Alamos National Laboratory / UM-SPARC","lw_MEZgAAAAJ","in/michael-taylor-04968941","Coordination complex chemistry including for heavy elements. Accelerated molecular design for underexplored regions of the periodic table. Major contributor to OMol25 chemical diversity."],
+  ["Alexandre Tkatchenko","University of Luxembourg","o2t1Pv8AAAAJ","","I'm interested in making CC accurate ML force fields, as general as possible, as accurate as possible as widely applicable as possible. I think this will need integrating CC data at smaller scales and interatomic models at larger scales."],
+  ["Justin Smith","NVIDIA","U6mGcLUAAAAJ","in/justinstevensmith","Understanding the specific needs from a SW infrastructure point of view - specific CC reference wanted by the community, requirements along the lines of system sizes, element coverage, etc. Developer of old school ANI models and data sets, now at NVIDIA working on ecosystem enablement."],
+  ["Benjamin Shi","Flatiron Institute","iCS89NQAAAAJ","in/benjaminshi","I'm interested in developing accurate CC MLIPs, both for general foundation models and bespoke applications."],
+  ["Andreas Hansen","Mulliken Center for Theoretical Chemistry","AP2YBL8AAAAJ","","I am author of various benchmark sets (main group chemistry, transition metals complexes, NCIs) with focus on generating reliable theoretical reference data, and I played a key role in the development of GMTKN55. I was involved in the first local CCSD(T) implementation in ORCA and am an experienced tester and user of PNO-LCCSD(T)-F12 in Molpro."],
+  ["Peter Nagy","Budapest University of Technology and Economics","6CT8AGIAAAAJ","in/peter-nagy-78a66744","Developer of HPC- and LNO-accelerated CCSD(T) methods in the MRCC package, including derivatives, quantum embedding, open-shells, basis set corrections... With these efficient methods my group also contributes at CCSD(T)-level: advanced benchmark protocols, ML training datasets (energies, forces, atomic decomposition…) and large-scale applications for (bio)chemistry, materials and catalysis."],
+  ["Daniel Levine","FAIR Chemistry, Meta","AcE5Wt4AAAAJ","in/daniel-levine-82558447","Large-scale high-quality data generation, MLIP performance. I want to help ensure that MLIPs are highly accurate and highly performant enough to push the boundary of simulation and make real-world advances. Lead author on OMol25."],
+  ["Rob Parrish","Math Libraries, NVIDIA","nlQVGpIAAAAJ","in/robert-parrish-366a9566","Old-school quantum chemist who will be building libraries to accelerate quantum chemistry codes as long as they will pay me to do this. Particularly interested in library techniques to make high-quality DFT and post-DFT properties sing on modern GPUs."],
+  ["Jan Hermann","MSR AI for Science","5TjVq0YAAAAJ","in/jhrmnn","Large-scale coupled-cluster-level data generation for training ML quantum chemistry models. Co-lead Skala XC functional."],
+  ["Jutta Rogal","Flatiron Institute","tDJ064gAAAAJ","","Exploring the possibilities of having highly accurate MLIPs that are also fast to be used in sampling application, in particular for reactive systems."],
+  ["Rafa (Rafael Gómez-Bombarelli)","MIT / Lila Sciences","jJ5JkCQAAAAJ","in/rgbombarelli","MLIPs as foundational representation learning tools."],
+  ["Weiluo Ren","ByteDance Seed","azE-Yq0AAAAJ","","Scalable generation of high-quality data across both weakly and strongly correlated systems."],
+  ["Hatem Helal","Potential Sciences","inS9BJ8AAAAJ","in/hatemhelal","Interested in tradeoffs between label accuracy and throughput for data generation. Co-author of QM1B, hardware accelerated electronic structure methods, and now CEO of Potential Sciences."],
+  ["Daniel Smith","Achira","G9iaJP8AAAAJ","in/dgasmith","I'm interested in how far we can push the accuracy of MLIP potentials. Especially how we can generalize from atoms to materials and biomolecules. Psi4, QM Datasets, Orbnet, Achira CTO."],
+  ["Teresa Head-Gordon","UC Berkeley","LP_1xT4AAAAJ","in/teresa-head-gordon-873b3759","Large-scale high-quality data generation, MLIP development, MLIP foundation models."],
+  ["Ed Valeev","Virginia Tech","4QxcieMAAAAJ","in/edwardvaleev","Reduced-complexity better-than-DFT QM methods (e.g. PNO-style coupled-cluster)."],
+  ["Gregor Simm","Microsoft Research","Bwy4PtQAAAAJ","in/gncs","I'm interested in making more accurate ML density functionals and ML force fields, as general as possible, as accurate as possible as widely applicable as possible."],
+  ["Ilyes Batatia","University of Cambridge","fTVuWFMAAAAJ","in/ilyes-batatia-725ab5197",""],
+  ["Amir Karton","Institute for Strategic AI, University of New England (AU)","ogleADAAAAAJ","in/amirkarton","I develop highly accurate composite wavefunction theories and large-scale chemical databases to advance density functional theory (DFT) and machine-learning interatomic potentials (MLIPs), enabling reliable thermochemical and kinetic predictions across broad chemical spaces."],
+  ["Martin Head-Gordon","UC Berkeley / LBL / Q-Chem","9Z52tZ4AAAAJ","",""],
+  ["Laura Gagliardi","University of Chicago","7rJTBR0AAAAJ","in/laura-gagliardi-896077278",""],
+  ["Garnet Chan","Caltech","TDzdHZgAAAAJ","",""],
+  ["Tim Berkelbach","Flatiron Institute","PTlQmQPrE8AC","",""]
+];
+
+const TOPICS = [
+  ["Data generation", /data(set|base)?s?\b|data generation|training sets|benchmark/i],
+  ["MLIPs & force fields", /MLIP|force field|interatomic|MACE|AIMNet|ANI\b|foundation model/i],
+  ["Coupled cluster", /\bCC\b|coupled.cluster|CCSD|LNO|PNO|wavefunction|post-DFT/i],
+  ["DFT", /\bDFT\b|density functional|XC functional|dispersion/i],
+  ["Reactivity & kinetics", /reactive|kinetic|reactions/i],
+  ["Software & GPUs", /GPU|HPC|librar|infrastructure|ORCA|MRCC|Psi4|Molpro|code|hardware/i]
+];
+
+const LEADS = {
+  "Rafa (Rafael Gómez-Bombarelli)": ["1.A","Validation against experiment"],
+  "Sam Blau": ["1.A","Validation against experiment"],
+  "Martin Head-Gordon": ["1.B","Method benchmarking"],
+  "Stefan Grimme": ["1.B","Method benchmarking"],
+  "Rob Parrish": ["2.A","Near-term developments in linear-scaling forces"],
+  "Tim Berkelbach": ["2.A","Near-term developments in linear-scaling forces"],
+  "Ilyes Batatia": ["2.B","Energy and force budget allocation"],
+  "Liz Decolvenaere": ["2.B","Energy and force budget allocation"],
+  "Michael G. Taylor": ["3.A","Transition metals"],
+  "Garnet Chan": ["3.A","Transition metals"],
+  "Laura Gagliardi": ["3.B","Reactivity"],
+  "Stephen Klippenstein": ["3.B","Reactivity"],
+  "Daniel Levine": ["4","Dataset coverage"]
+};
+const people = P.map(([n,a,s,l,i]) => ({ n, a, s, l, i, lead: LEADS[n] }))
+  .sort((x, y) => last(x.n).localeCompare(last(y.n)));
+function last(n){ const p = n.split(" "); return p[p.length-1]; }
+function initials(n){ const p = n.replace(/\(.*\)/,"").replace(/\./g,"").split(" ").filter(Boolean); return (p[0][0] + (p.length>1 ? p[p.length-1][0] : "")).toUpperCase(); }
+function esc(s){ return s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+const q = document.getElementById("q");
+q.addEventListener("input", render);
+
+function render(){
+  const term = q.value.trim().toLowerCase();
+  const list = people.filter(p => (!term || (p.n + " " + p.a + " " + p.i + (p.lead ? " discussion lead co-lead session " + p.lead.join(" ") : "")).toLowerCase().includes(term)));
+  const orgs = ORGS.map(n => list.find(p => p.n === n)).filter(Boolean);
+  const leads = Object.keys(LEADS).filter(n => !ORGS.includes(n)).map(n => list.find(p => p.n === n)).filter(Boolean);
+  const rest = list.filter(p => !ORGS.includes(p.n) && !p.lead);
+  document.getElementById("grid-lead").innerHTML = leads.map(card).join("");
+  document.getElementById("sec-lead").hidden = !leads.length;
+  document.getElementById("grid-org").innerHTML = orgs.map(card).join("");
+  document.getElementById("grid").innerHTML = rest.map(card).join("");
+  document.getElementById("sec-org").hidden = !orgs.length;
+  document.getElementById("sec-att").hidden = !rest.length;
+  document.getElementById("count").textContent = `${list.length} of ${people.length} people`;
+  document.getElementById("empty").hidden = list.length > 0;
+}
+const ORGS = ["Sam Blau","Gábor Csányi","Liz Decolvenaere","Daniel Levine","Tim Berkelbach","Jutta Rogal"];
+function card(p){ return `
+    <article class="card">
+      <div class="top">
+        <div class="mono" aria-hidden="true">${initials(p.n)}</div>
+        <div class="who"><h2 class="name">${esc(p.n)}</h2><p class="aff">${esc(p.a)}</p></div>
+      </div>
+      ${p.lead ? `<div class="lead"><span class="lead-k">Discussion co-lead · Session ${p.lead[0]}</span><span class="lead-t">${p.lead[1]}</span></div>` : ""}
+      <p class="interests ${p.i ? "" : "none"}">${p.i ? esc(p.i) : "No research summary submitted."}</p>
+      <div class="foot">
+        <div class="links">
+          ${p.s ? `<a href="https://scholar.google.com/citations?user=${p.s}" target="_blank" rel="noopener">Scholar</a>` : ""}
+          ${p.l ? `<a href="https://www.linkedin.com/${p.l}" target="_blank" rel="noopener">LinkedIn</a>` : ""}
+        </div>
+      </div>
+    </article>`;
+}
+render();
+
+/* ---------- Schedule ---------- */
+const MUR = "9th floor MUR", BRK = "Breakout room, 8th floor MUR", LNG = "9th floor Lounge";
+const ORG_LEADS = "Sam Blau, Gábor Csányi, Liz Decolvenaere";
+const DAYS = [
+  { d: "Thursday, November 5", k: "Day 1", slots: [
+    { t: "8:00–8:30 AM", meal: 1, k: "Arrival", title: "Breakfast & registration", room: LNG },
+    { t: "8:30–10:00 AM", plenary: 1, k: "Session 0 · Full group", title: "DFT is not all you need: the case for a coupled cluster dataset", room: MUR, note: "Start time may move to 9:00" },
+    { t: "10:00 AM–12:00 PM", par: [
+      { k: "Session 1.A · Applications", title: "Validation against experiment", leads: "Rafa (Rafael Gómez-Bombarelli), Sam Blau", room: MUR },
+      { k: "Session 1.B · Method developers & consumers", title: "Method benchmarking", leads: "Martin Head-Gordon, Stefan Grimme", room: BRK }
+    ], parts: ["10:00–10:55  Part 1", "10:55–11:05  Break", "11:05–12:00  Part 2"] },
+    { t: "12:00–1:30 PM", meal: 1, k: "Lunch", title: "Lunch", room: LNG },
+    { t: "1:30–2:30 PM", plenary: 1, k: "Gather 1 · Full group", title: "Gather & discuss", leads: ORG_LEADS, room: MUR },
+    { t: "2:30–4:30 PM", par: [
+      { k: "Session 2.A · QM method developers", title: "Near-term developments in linear-scaling forces", leads: "Rob Parrish, Tim Berkelbach", room: MUR },
+      { k: "Session 2.B · MLIP developers", title: "Energy and force budget allocation (+ energy types)", leads: "Ilyes Batatia, Liz Decolvenaere", room: BRK }
+    ], parts: ["2:30–3:25  Part 1", "3:25–3:35  Break", "3:35–4:30  Part 2"] },
+    { t: "4:30–5:30 PM", plenary: 1, k: "Gather 2 · Full group", title: "Gather & discuss", leads: ORG_LEADS, room: MUR },
+    { t: "6:00–8:00 PM", meal: 1, k: "Dinner · Everyone", title: "Group dinner (offsite)" }
+  ]},
+  { d: "Friday, November 6", k: "Day 2", slots: [
+    { t: "8:00–9:00 AM", meal: 1, k: "Arrival", title: "Breakfast & networking", room: LNG },
+    { t: "9:00–11:00 AM", par: [
+      { k: "Session 3.A", title: "Transition metals", leads: "Michael G. Taylor, Garnet Chan", room: MUR },
+      { k: "Session 3.B", title: "Reactivity", leads: "Laura Gagliardi, Stephen Klippenstein", room: BRK }
+    ], parts: ["9:00–9:55  Part 1", "9:55–10:05  Break", "10:05–11:00  Part 2"] },
+    { t: "11:00 AM–12:00 PM", plenary: 1, k: "Gather 3 · Full group", title: "Gather & discuss", leads: ORG_LEADS, room: MUR },
+    { t: "12:00–1:30 PM", meal: 1, k: "Lunch", title: "Lunch", room: LNG },
+    { t: "1:30–3:25 PM", plenary: 1, k: "Session 4 · Full group", title: "Dataset coverage", leads: "Daniel Levine", room: MUR },
+    { t: "3:25–3:35 PM", meal: 1, k: "Break", title: "Break" },
+    { t: "3:35–4:30 PM", plenary: 1, k: "Session 5 · Full group", title: "Wrap-up, next steps & closing", leads: ORG_LEADS, room: MUR }
+  ]}
+];
+function blk(b, cls){
+  return `<div class="blk ${cls||""}">
+    <span class="blk-k">${b.k}</span>
+    <h3 class="blk-t">${esc(b.title)}</h3>
+    <div class="meta">${b.leads ? `<span>Led by <b>${esc(b.leads)}</b></span>` : ""}${b.room ? `<span>${b.room}</span>` : ""}</div>
+    ${b.note ? `<span class="note">${b.note}</span>` : ""}
+  </div>`;
+}
+document.getElementById("sched").innerHTML = DAYS.map(day => `
+  <section class="day">
+    <h2 class="day-h"><strong>${day.d}</strong><span>${day.k}</span></h2>
+    ${day.slots.map(s => `<div class="slot"><div class="t">${s.t}</div>${
+      s.par ? `<div><div class="par">${s.par.map(b => blk(b)).join("")}</div><div class="parts">${s.parts.map(p => `<span>${p.replace(/  /, " · ")}</span>`).join("")}</div></div>`
+            : blk(s, s.meal ? "meal" : s.plenary ? "plenary" : "")
+    }</div>`).join("")}
+  </section>`).join("");
+
+function route(){
+  const v = location.hash === "#attendees" ? "attendees" : "schedule";
+  document.getElementById("view-schedule").hidden = v !== "schedule";
+  document.getElementById("view-attendees").hidden = v !== "attendees";
+  document.getElementById("nav-schedule").setAttribute("aria-current", v === "schedule" ? "page" : "false");
+  document.getElementById("nav-attendees").setAttribute("aria-current", v === "attendees" ? "page" : "false");
+}
+window.addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>
