@@ -95,6 +95,22 @@ h1 { font-family: var(--display); font-weight: 700; font-size: clamp(34px, 6vw, 
 .note { font-size: 12px; color: var(--accent); font-weight: 600; }
 .par { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; min-width: 0; }
 .parts { display: grid; gap: 2px; margin-top: 6px; padding-top: 8px; border-top: 1px dashed var(--line); font: 400 12px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.par { align-items: start; }
+/* Session details dropdown */
+.info { margin-top: 8px; }
+.info > summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font: 600 13px var(--body); color: var(--accent); background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 8px; padding: 7px 12px; user-select: none; }
+.info > summary::-webkit-details-marker { display: none; }
+.info > summary::before { content: ""; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform .15s; margin-right: 2px; }
+.info[open] > summary::before { transform: rotate(45deg); }
+.info > summary:hover { background: var(--accent); color: var(--surface); }
+.info > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.info .lbl-open { display: none; }
+.info[open] .lbl-open { display: inline; }
+.info[open] .lbl-closed { display: none; }
+.info-body { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); display: grid; gap: 10px; font-size: 14px; }
+.info-body p { margin: 0; }
+.info-body ul, .info-body ol { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+.qh { font: 500 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 6px 0 -2px; }
 @media (max-width: 720px) {
   .slot { grid-template-columns: 1fr; gap: 6px; }
   .t { padding-top: 0; }
@@ -241,16 +257,16 @@ const ORG_LEADS = "Sam Blau, Gábor Csányi, Liz Decolvenaere";
 const DAYS = [
   { d: "Thursday, November 5", k: "Day 1", slots: [
     { t: "8:00–8:30 AM", meal: 1, k: "Arrival", title: "Breakfast & registration", room: LNG },
-    { t: "8:30–10:00 AM", plenary: 1, k: "Session 0 · Full group", title: "DFT is not all you need: the case for a coupled cluster dataset", room: MUR, note: "Start time may move to 9:00" },
+    { t: "8:30–10:00 AM", plenary: 1, id: "0", k: "Session 0 · Full group", title: "DFT is not all you need: the case for a coupled cluster dataset", room: MUR, note: "Start time may move to 9:00" },
     { t: "10:00 AM–12:00 PM", par: [
-      { k: "Session 1.A · Applications", title: "Validation against experiment", leads: "Rafa (Rafael Gómez-Bombarelli), Sam Blau", room: MUR },
-      { k: "Session 1.B · Method developers & consumers", title: "Method benchmarking", leads: "Martin Head-Gordon, Stefan Grimme", room: BRK }
+      { id: "1.A", k: "Session 1.A · Applications", title: "Validation against experiment", leads: "Rafa (Rafael Gómez-Bombarelli), Sam Blau", room: MUR },
+      { id: "1.B", k: "Session 1.B · Method developers & consumers", title: "Method benchmarking", leads: "Martin Head-Gordon, Stefan Grimme", room: BRK }
     ], parts: ["10:00–10:55  Part 1", "10:55–11:05  Break", "11:05–12:00  Part 2"] },
     { t: "12:00–1:30 PM", meal: 1, k: "Lunch", title: "Lunch", room: LNG },
     { t: "1:30–2:30 PM", plenary: 1, k: "Gather 1 · Full group", title: "Gather & discuss", leads: ORG_LEADS, room: MUR },
     { t: "2:30–4:30 PM", par: [
-      { k: "Session 2.A · QM method developers", title: "Near-term developments in linear-scaling forces", leads: "Rob Parrish, Tim Berkelbach", room: MUR },
-      { k: "Session 2.B · MLIP developers", title: "Energy and force budget allocation (+ energy types)", leads: "Ilyes Batatia, Liz Decolvenaere", room: BRK }
+      { id: "2.A", k: "Session 2.A · QM method developers", title: "Near-term developments in linear-scaling forces", leads: "Rob Parrish, Tim Berkelbach", room: MUR },
+      { id: "2.B", k: "Session 2.B · MLIP developers", title: "Energy and force budget allocation (+ energy types)", leads: "Ilyes Batatia, Liz Decolvenaere", room: BRK }
     ], parts: ["2:30–3:25  Part 1", "3:25–3:35  Break", "3:35–4:30  Part 2"] },
     { t: "4:30–5:30 PM", plenary: 1, k: "Gather 2 · Full group", title: "Gather & discuss", leads: ORG_LEADS, room: MUR },
     { t: "6:00–8:00 PM", meal: 1, k: "Dinner · Everyone", title: "Group dinner (offsite)" }
@@ -258,23 +274,133 @@ const DAYS = [
   { d: "Friday, November 6", k: "Day 2", slots: [
     { t: "8:00–9:00 AM", meal: 1, k: "Arrival", title: "Breakfast & networking", room: LNG },
     { t: "9:00–11:00 AM", par: [
-      { k: "Session 3.A", title: "Transition metals", leads: "Michael G. Taylor, Garnet Chan", room: MUR },
-      { k: "Session 3.B", title: "Reactivity", leads: "Laura Gagliardi, Stephen Klippenstein", room: BRK }
+      { id: "3.A", k: "Session 3.A", title: "Transition metals", leads: "Michael G. Taylor, Garnet Chan", room: MUR },
+      { id: "3.B", k: "Session 3.B", title: "Reactivity", leads: "Laura Gagliardi, Stephen Klippenstein", room: BRK }
     ], parts: ["9:00–9:55  Part 1", "9:55–10:05  Break", "10:05–11:00  Part 2"] },
     { t: "11:00 AM–12:00 PM", plenary: 1, k: "Gather 3 · Full group", title: "Gather & discuss", leads: ORG_LEADS, room: MUR },
     { t: "12:00–1:30 PM", meal: 1, k: "Lunch", title: "Lunch", room: LNG },
-    { t: "1:30–3:25 PM", plenary: 1, k: "Session 4 · Full group", title: "Dataset coverage", leads: "Daniel Levine", room: MUR },
+    { t: "1:30–3:25 PM", plenary: 1, id: "4", k: "Session 4 · Full group", title: "Dataset coverage", leads: "Daniel Levine", room: MUR },
     { t: "3:25–3:35 PM", meal: 1, k: "Break", title: "Break" },
-    { t: "3:35–4:30 PM", plenary: 1, k: "Session 5 · Full group", title: "Wrap-up, next steps & closing", leads: ORG_LEADS, room: MUR }
+    { t: "3:35–4:30 PM", plenary: 1, id: "5", k: "Session 5 · Full group", title: "Wrap-up, next steps & closing", leads: ORG_LEADS, room: MUR }
   ]}
 ];
+/* Session descriptions & discussion questions (from the Discussion Leads doc). Sessions left blank there are omitted. */
+const INFO = {
+  "0": {
+    desc: ["Short framing presentations (10 minutes, up to 6 slides each). There is no discussion in this session."],
+    groups: [{ ul: 1, q: [
+      "10 min: Sam, Gábor and Liz set up the context",
+      "10 min: Daniel discusses the paper and what we want out of the discussions",
+      "10 min: each discussion lead explains their discussion section"
+    ]}]
+  },
+  "1.A": {
+    desc: ["A CCSD(T) dataset has value only through the MLIPs trained on it, and MLIPs matter where CCSD(T) cannot go: finite-temperature ensembles of 10³–10⁵ atoms over nanoseconds that set structure versus temperature, phase and binding thermodynamics, and transport. A dataset should therefore be judged by whether MLIPs trained on it agree better with experiment than a DFT-trained control. That comparison is informative only when two conditions are documented for each benchmark: the experimental number is accurate and measures what is computed, and the computed number is converged with MLIP error bounded, so the remaining gap belongs to the labels. Target output: a ranked list of benchmarks meeting both conditions, for materials, molecules in solution and biomolecules, and the protocol that documents them."],
+    groups: [
+      { h: "Part 1", q: [
+        "Which finite-temperature observables shift measurably when DFT labels are replaced by CCSD(T) labels, by more than the combined uncertainty of experiment, sampling, MLIP fit and missing physics? Free energies amplify small energy differences: at 300 K, 1.4 kcal/mol is a factor of 10 in an equilibrium constant, and the melting point of ice moves 4.4 K per meV per molecule. Candidates, from few-body to binding: second virial coefficients and dilute-gas viscosity; rare-gas melting; liquid densities, enthalpies of vaporization and mixing enthalpies; melting and order–disorder transitions in rigid molecular crystals, including KDP; polymorph free energies; tautomer and hydrogen-bond equilibria in solution; alkane adsorption at zeolite acid sites; enzyme barriers from measured rates.",
+        "How accurate is each experimental number, how was that accuracy established (repeat measurements, interlaboratory comparisons, reference data such as NIST REFPROP, IAPWS or ThermoML, metrology), and what model maps the raw measurement onto the computed quantity? Some data are excellent: liquid densities to 10⁻⁵ g/cm³, the 3.82 K melting-point shift between D2O and H2O, ITC affinities of neutral host–guest pairs to about 0.05 kcal/mol. Others are weaker than they look: about one in five reported MOF CO2 isotherms are outliers, solid-electrolyte conductivities scatter by 35–50% between laboratories, and binding affinities differ by about 0.9 kcal/mol across assays against 0.23 within one.",
+        "Which benchmarks are positive controls, where bespoke CC-level models already match experiment (liquid water, CO on MgO, CO2 in chabazite, Kr and Xe melting), and which are negative controls, where DFT is already within experimental error or CCSD(T) does not apply (metals, strongly correlated systems)? Where does the static regime end: when is local CCSD(T) on a few stationary points cheaper and better than any dataset?"
+      ]},
+      { h: "Part 2", start: 4, q: [
+        "What evidence shows that a computed observable is converged, so its error comes from the potential and not from the simulation: independent replicas with block-averaged uncertainties, two system sizes with finite-size corrections, cross-checks between protocols, run lengths matched to the slowest relaxation? Which observables converge within 10³–10⁴ atoms and 1–10 ns (about two to three GPU-weeks for 10⁴ atoms × 10 ns with current foundation models), and which need distillation or enhanced sampling?",
+        "What protocol separates MLIP error from label error? Four MLIP fits of one functional put the melting point of ice anywhere from 246 to 296 K, and missing physics can pass for a label error (dispersion beyond the cutoff; classical instead of quantum nuclei). Candidates: DFT- and CC-trained models with identical architecture and training configurations, spreads over seeds and architectures, free-energy perturbation back to the reference on tens of snapshots, and the slope of experimental residuals against the reweighted label shift (about 30–50 well-chosen ligand pairs for binding free energies, against 160–420 for an RMSE comparison).",
+        "Which designs cancel non-label errors by construction, and what should a dataset release demonstrate? Isotopologues share one potential, so fit and sampling errors cancel in their differences: the D2O–H2O shifts in melting point (3.82 K) and density maximum (7.2 K); the shift of the ferroelectric transition from KDP to deuterated KDP (123 to 229 K), where a SCAN-trained model stays paraelectric down to 50 K; the larger volume of D2O ice. Mixtures, solvent series, substituent mutations, and few-body observables computed both directly from CC energies and through the MLIP do the same. Possible release minimum: positive controls reproduced, one DFT-attributable gap closed per thread, no regression on negative controls, and the size of any empirical correction reported."
+      ]}
+    ]
+  },
+  "2.A": {
+    desc: ["We all agree that we need forces to train an MLIP (do we? Let's ask this!), and we all agree that canonical CCSD(T) forces are too expensive (do we? Let's ask this too!). While reduced-scaling energies are increasingly available (e.g., DEC, CIM, LNO, DLPNO), reduced-scaling forces are less so and often contain noise sources or artifacts from local partition discontinuities. This discussion will be about availability, prospects, and requirements for reduced-scaling implementations of CCSD(T) forces at the scale needed for MLIP training."],
+    groups: [
+      { h: "Part 1", q: [
+        "Are we sure we need forces, and are we sure we need reduced-scaling forces?",
+        "For a useful CCSD(T) force code, how many heavy atoms/AOs must it handle and in how much wall time?",
+        "How accurate must the CCSD(T) forces be? Local approximations with thresholds introduce discontinuities into the PES—are these tolerable? Do we already know, or will testing be needed?"
+      ]},
+      { h: "Part 2", start: 4, q: [
+        "What are the pros and cons of existing, nascent, or forthcoming reduced-scaling force implementations? Can datasets that mix forces from different reduced-scaling methods be used, or are their different systematic errors problematic for mixing?",
+        "Are forces enough? Would limited Hessians be valuable, and how could they be used?",
+        "How much demand exists for periodic forces? Is a purely molecular dataset a priority? Are cluster-based corrections good enough for periodic systems?"
+      ]},
+      { h: "Extended / as time allows", ul: 1, q: [
+        "For such forces, is it more useful for these forces to be near equilibrium or very far from equilibrium (logical answer is across the low-lying potential surface, but we should discuss)? Lower scaling methods than CC can get geometries exceedingly accurate, which leads us to wonder why we need a check of 0 == 0 at equilibrium.",
+        "How big of system size and/or basis do we actually need for 0/1/2 derivatives? Would global MP2 + fragment coupled cluster or other fragment/incremental methods suffice?"
+      ]}
+    ]
+  },
+  "2.B": {
+    desc: ["Given a fixed budget of compute (i.e., so many CPU- or GPU-hours), what are the kinds of (approximate) CCSD(T) labels one might want to produce? Not all labels are created equally: analytical forces are not available in all CCSD(T) codes, and when they are, gradients can add a factor of 2-3x to a calculation's duration. Beyond formation energies and forces, one can also target quantities like deformation energies, intermolecular non-covalent interaction energy, many-body energies, which require multiple calculations to produce one useful label. What are the pros and cons of different label types, and how might one choose between flavors of label given different goals?"],
+    groups: [
+      { h: "Part 1", q: [
+        "What energy labels, force labels, and other observables have people been finding useful in their applications? E.g., interaction energies, hessians, multipole moments, response functions, ionization potentials, electron affinities, etc.",
+        "How much do these labels cost, and how much can we trust them? Which ones are available now or soon in CCSD(T) codes? How much do we expect properties to be learnable from smaller systems (gas-phase monomers, dimers, etc) vs conditions closer to condensed-phase (droplets, protein cutouts)?",
+        "Given a finite budget, how do we value chemical and geometric diversity vs local information? E.g., do we want to run more energy calculations, or fewer force calculations? How does this calculus change if the CCSD(T) dataset is being used as a “core” dataset, vs as a fine-tuning objective or mix-in?"
+      ]},
+      { h: "Part 2", start: 4, q: [
+        "Linear-scaling CCSD(T) methods offer different levels of accuracy and flavors of noise, which have different scaling laws both asymptotically and in the “middle” scale. How should one budget their dataset into different approximations of CCSD(T), or use the different accuracy knobs?",
+        "How do we ensure datasets are extensible, so that the work of one group can be combined with the work of another? Which labels can and can't be mixed with other implementations, or levels of theory? For example, you cannot mix formation energy labels from two different DFT functionals, or even the same DFT functional used with two different basis sets, or two different exchange implementations.",
+        "How do we maintain consistency across the entire periodic table? What special considerations do we need to consider when including heavier elements, and how might that change our budget considerations?"
+      ]},
+      { h: "Time permitting", start: 7, q: [
+        "Embedding methods and implicit solvent methods as a bridge to MLIP-useful CC datasets. How much should we focus on or emphasize these approaches, and how far can the data hope to take us? What problems in existing datasets does this solve?"
+      ]}
+    ]
+  },
+  "3.A": {
+    desc: ["Coverage and accuracy of methods for transition metals (and heavier) tend to lag main group elements. OMol25 introduced elemental diversity up to Z=83, but was limited to ground state DFT. Dynamic correlation is often critical and underquantified in metal systems or ignored due to computational expense dealing with heavier atoms and larger ligands including delocalized states such as metal-ligand charge transfer states. Significant theoretical challenges remain for generating larger-scale multi-element coupled cluster datasets including different relativistic treatments and/or spin-orbit coupling, ECP selection, and so on. Additionally, significant computational challenges remain due to the larger molecular size of chemically-relevant metal complex systems (often on the order of 50-200 atoms), error tracking and handling giving tricky SCF convergence, and critical metal-metal interactions for which CCSD(T) is both expensive and potentially not accurate enough with unaddressed static correlation potentially present."],
+    groups: [
+      { h: "Part 1 · Theoretical questions", q: [
+        "Metal complexes commonly have many low-lying electronic states that differ in spin, oxidation-state assignment, metal–ligand charge transfer, and orbital occupation. Metal-metal bonds and bridged multinuclear complexes can involve several closely spaced (d,f)-orbital configurations and competing spin couplings. What electronic states should define the dataset's coverage: only an assigned ground state, or a controlled set of low-lying spin and charge-transfer states? How should we identify when a nominal CCSD(T) calculation has become unreliable because the system has substantial static correlation, and should those systems be flagged, excluded, or assigned higher-level reference calculations?",
+        "For transition and heavy elements, scalar relativistic effects, spin-orbit coupling, and core-valence correlation can materially change relative energies and bonding. What level of relativistic treatment is appropriate for a broadly useful dataset, and can a consistent combination of effective core potentials, relativistic Hamiltonians, and basis sets be used across the periodic table without introducing element-dependent discontinuities?",
+        "What should the primary target quantities in a metal-complex dataset be: absolute energies, relative isomer energies, spin gaps, ligand-binding energies, metal–metal bond dissociation curves, or reaction energies? These labels can require different fragment states, charge assignments, and reference geometries, particularly for multinuclear complexes. How should the dataset define these quantities so that metal–ligand and metal–metal interactions are chemically meaningful and comparisons do not depend on arbitrary or inconsistent choices of fragmentation and electronic state?"
+      ]},
+      { h: "Part 2 · Computational expense questions", start: 4, q: [
+        "Chemically relevant metal complexes often contain 50–200 atoms, several metal centers, and large ligand environments, making canonical CCSD(T) prohibitively expensive with converged basis sets. Should the dataset rely on local, pair-natural-orbital, or other reduced-scaling CCSD(T) variants, and how should their errors be calibrated for metal-ligand and metal-metal bonding relative to canonical calculations on representative smaller complexes?",
+        "Sampling each metal complex may require conformers, coordination geometries, oxidation states, spin states, and metal–metal distances rather than a single optimized structure. What sampling hierarchy is appropriate - for example, DFT-based conformer and spin-state screening followed by CCSD(T) single points - and how can we ensure that lower-level screening does not systematically omit the structures or electronic states most likely to challenge CCSD(T)?",
+        "High-throughput CCSD(T) workflows for open-shell metal complexes will face frequent SCF failures, multiple competing Hartree-Fock solutions, near-linear basis-set dependencies, large scratch and memory requirements, and ambiguous convergence. What automated error-handling and provenance standards are needed to make every data point reproducible, to distinguish a numerically failed calculation from a chemically problematic one, and to record the reference wavefunction and diagnostics needed for later filtering?"
+      ]}
+    ]
+  },
+  "3.B": {
+    desc: ["The key question for our group is how do we make force fields that yield reactivity predictions across broad regions of chemical space with accuracies that are useful for kinetic modeling? What information do we need to do that and what accuracy do we need to have for that information? Ideally, the predictions would rival the quality of experimental measurements of individual. Qualitatively this implies rate uncertainties on the order of a factor of two, which correlates with barrier height uncertainties of 0.4 kcal/mol (near room T), and partition factor accuracies of better than a factor of two. These accuracies are well beyond current DFT accuracies – in many ways, CCSD(T) can meet those challenges."],
+    groups: [
+      { h: "Part 1", q: [
+        "Transition state theory (TST) provides an effective framework for thinking about any reactivity calculation. The saddle point is the central object of any TST calculation. Implementation of TST requires the saddle point energy as well as partition functions for reactants, saddle point, and products. Are DFT geometries and frequencies good enough, or do we need CCSD(T) geometries and frequencies? What kind of basis sets are sufficient for the geometry, the frequency, and the barrier energy?",
+        "Variational and tunneling corrections to TST require more global potential energy surface information beyond simple local saddle point expansions. Typically, this comes from mapping of reaction paths and/or instanton tunneling paths. How do we want to generate that information? Or do we want to limit consideration to conventional TST?",
+        "Reactivity space is enormous. How do we want to cover that space? Is there some utility to focusing on particular classes of reactions? E.g., break 2 form 2 bonds for all manner of reactions. Etc."
+      ]},
+      { h: "Part 2", start: 4, q: [
+        "Very high accuracy (0.2 kcal/mol) can be obtained for small prototype reactions through composite methods that combine higher order coupled-cluster, core-valence, etc. corrections. Do we want to use some kind of laddering of such prototype results to larger species as a way to improve any raw CCSD(T) numbers that we generate? The job of the CCSD(T) evaluations is then simply to extrapolate the prototype results to a mapping of the effect of a wide variety of side-groups.",
+        "CCSD(T) has limitations. For example, simple bond breaking of a molecule into two radicals leads to transition states whose energies are not well captured with CCSD(T). There are many other related challenges for transition metal reactions. For the simple bond fission case, the use of a UHF wavefunction results in CCSD(T) energies that are qualitatively correct, but still fails to meet kinetic accuracy goals. Is that good enough for this global mapping, or do we want to find some better way to correct them? Can CCSDT(Q) etc. corrections get things far enough? Is there some multi-reference coupled cluster that is effective enough? Do we want to isolate the cases where we expect the CCSD(T) energy to be poor approximation to the accurate energy?",
+        "For radical molecule reactions, in the TS region there are often multiple HF solutions and the CCSD(T) energies can be quite different for the different HF solutions. Furthermore, the result from the ground HF solution is not always the best. How should we handle that issue?",
+        "Should we be looking at methods that use DFT or CASSCF to provide the reference wave functions for the CCSD(T) evaluations?"
+      ]}
+    ]
+  },
+  "5": {
+    groups: [{ ul: 1, q: [
+      "Who is starting on what?",
+      "What is our next meeting about? When is it? Where is it?",
+      "Feedback on format, discussions"
+    ]}]
+  }
+};
 function blk(b, cls){
   return `<div class="blk ${cls||""}">
     <span class="blk-k">${b.k}</span>
     <h3 class="blk-t">${esc(b.title)}</h3>
     <div class="meta">${b.leads ? `<span>Led by <b>${esc(b.leads)}</b></span>` : ""}${b.room ? `<span>${b.room}</span>` : ""}</div>
     ${b.note ? `<span class="note">${b.note}</span>` : ""}
+    ${b.id && INFO[b.id] ? info(INFO[b.id]) : ""}
   </div>`;
+}
+function info(x){
+  const groups = x.groups.map(g => `${g.h ? `<p class="qh">${esc(g.h)}</p>` : ""}${
+    g.ul ? `<ul>${g.q.map(q => `<li>${esc(q)}</li>`).join("")}</ul>`
+         : `<ol start="${g.start||1}">${g.q.map(q => `<li>${esc(q)}</li>`).join("")}</ol>`}`).join("");
+  const what = x.desc ? (x.groups.length ? "description &amp; questions" : "description") : "discussion questions";
+  return `<details class="info"><summary><span class="lbl-closed">Show ${what}</span><span class="lbl-open">Hide ${what}</span></summary>
+    <div class="info-body">${x.desc ? x.desc.map(p => `<p>${esc(p)}</p>`).join("") : ""}${groups}</div></details>`;
 }
 document.getElementById("sched").innerHTML = DAYS.map(day => `
   <section class="day">
