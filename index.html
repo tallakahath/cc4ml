@@ -317,11 +317,11 @@ const INFO = {
       { h: "Part 1", q: [
         "Chemical energy differences span about three orders of magnitude, from vdW and conformers up to covalent bonds. Quantum chemical datasets such as GMTKN55 and GSCDB137 attempt to cover chemically relevant energy differences. Which properties and energy scales matter most for training and validating MLIPs, and does a single dataset need all of them?",
         "Pople\u2019s model chemistry requires size consistency and smooth potential energy surfaces. Approximate CC methods can break both, for example with PNO discontinuities along a scan. How much does that hurt force training, and what should consumers check before trusting CC forces?",
-        "Pople\u2019s rule is \u201ccalibrated, not just fitted,\u201d with error bars known before you use the method. What independent benchmark would we need to calibrate the reference method itself before it generates millions of labels? Is GMTKN55, mindless molecules or something new enough?"
+        "Pople’s rule is “calibrated, not just fitted,” with error bars known before you use the method. Is CCSD(T) a benchmark level of theory? Or more precisely, when is it not? What independent benchmark would we need to calibrate the reference method itself before it generates millions of labels? Is GMTKN55, mindless molecules or something new enough?"
       ]},
       { h: "Part 2", start: 4, q: [
         "DFT succeeds \u201cbecause it rarely fails, not because it\u2019s highly accurate.\u201d Should a coupled-cluster dataset for ML be held to the same standard? If so, how do we measure and report robustness, separately from mean error?",
-        "Pople\u2019s model chemistry asks for a frozen method with no tuning for individual systems. Linear-scaling CC approximations like PNO/DLPNO have thresholds that matter. Is \u201cTightPNO-LCCSD(T)-F12b/AVQZ\u201d a properly defined model chemistry, and who decides the settings for a community dataset?",
+        "Pople’s model chemistry asks for a frozen method with no tuning for individual systems. The most widely used linear-scaling CC approximations like PNO/DLPNO have thresholds that matter. How reliable are they? Are there better options coming? Is “TightPNO-LCCSD(T)-F12b/AVQZ” a properly defined model chemistry, and who decides the settings for a community dataset?",
         "We have observed that \u201ca few prominent outliers in reference data can very badly influence training.\u201d How should dataset builders find, flag or filter those outliers? Should every label come with an uncertainty or a diagnostic (T1/D1, PNO-truncation error)?"
       ]}
     ]
@@ -387,7 +387,10 @@ const INFO = {
   },
   "4": {
     desc: ["One facet of dataset creation that can be easy to overlook is positioning them to cover the full gamut of what might be desirable. For example, it is easy to make choices that preclude generalization to larger systems or heavier elements. For coupled cluster, certain approximations might be applicable in one area but not another."],
-    groups: [{ q: ["What are the most important areas that a coupled cluster dataset ought to cover?", "What area would never be included in a coupled cluster dataset and should be actively excluded/require no planning for?", "How can parameters be selected that won't box in future work/development?"] }]
+    groups: [
+      { h: "Part 1", q: [["Where does coupled cluster provide the most useful improvement? These are the things that ought to be covered by a CC dataset", "For which combinations of chemical domain and target observable—conformer energies, intermolecular interactions, reaction barriers, metal spin gaps, phase thermodynamics—does CC materially improve on an appropriate DFT baseline? What evidence would distinguish high-priority domains, domains where DFT is sufficient, and domains where CCSD(T) itself is unreliable?"], ["What constitutes adequate coverage within a chemical domain?", "Beyond elements and molecular connectivity, which charge states, spin states, oxidation states, coordination environments, and geometries must be represented? How should we cover strained structures, proton transfer, bond formation and dissociation, and electronically unusual configurations without treating every successful CC calculation as a trustworthy label?"], ["What coverage is needed to transfer from small molecules to larger and extended systems?", "When are isolated molecules, clusters, fragments, or embedded calculations sufficient for condensed phases and periodic materials? Where do long-range electrostatics, polarization, screening, delocalization, or the surrounding environment require additional labels or a different modeling strategy, particularly for charged systems?"]] },
+      { h: "Part 2", start: 4, q: [["How should basis sets, relativistic treatments, and correlated-electron spaces be chosen across the periodic table?", "What accuracy requirements should determine diffuse functions, basis-set convergence, core–valence correlation, frozen-core definitions, effective core potentials, scalar relativity, and spin–orbit corrections? Can we define a documented family of compatible protocols that includes transition and heavy elements, and benchmark the boundaries between those protocols?"], ["How consistently do the chosen CC implementations treat different electronic states and system sizes?", "How should we handle reference dependence, restricted/unrestricted formalisms, spin contamination, and alternative open-shell triples definitions? For local or reduced-scaling methods, do domain and pair thresholds produce comparable errors across closed-shell, open-shell, charged, and metal-containing systems, and sufficiently smooth energies and forces along relevant trajectories?"], ["What evidence is required before extending the dataset into a new domain? This could also ask, “what domains should remain out of scope for a CC dataset?”", "What representative benchmarks should demonstrate reference-method accuracy, numerical robustness, and useful model transfer? Which calculation settings, diagnostics, electronic-state assignments, and uncertainty estimates must accompany labels so future contributors can determine whether new data are compatible, require a calibrated correction, or should form a separate subset?"]] }
+    ]
   },
   "5": {
     groups: [{ ul: 1, q: [
@@ -408,8 +411,8 @@ function blk(b, cls){
 }
 function info(x){
   const groups = x.groups.map(g => `${g.h ? `<p class="qh">${esc(g.h)}</p>` : ""}${
-    g.ul ? `<ul>${g.q.map(q => `<li>${esc(q)}</li>`).join("")}</ul>`
-         : `<ol start="${g.start||1}">${g.q.map(q => `<li>${esc(q)}</li>`).join("")}</ol>`}`).join("");
+    g.ul ? `<ul>${g.q.map(q => `<li>${Array.isArray(q) ? `<b>${esc(q[0])}</b><br>${esc(q[1])}` : esc(q)}</li>`).join("")}</ul>`
+         : `<ol start="${g.start||1}">${g.q.map(q => `<li>${Array.isArray(q) ? `<b>${esc(q[0])}</b><br>${esc(q[1])}` : esc(q)}</li>`).join("")}</ol>`}`).join("");
   const what = x.desc ? (x.groups.length ? "description &amp; questions" : "description") : "discussion questions";
   return `<details class="info"><summary><span class="lbl-closed">Show ${what}</span><span class="lbl-open">Hide ${what}</span></summary>
     <div class="info-body">${x.desc ? x.desc.map(p => `<p>${esc(p)}</p>`).join("") : ""}${groups}</div></details>`;
