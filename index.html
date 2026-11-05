@@ -311,6 +311,21 @@ const INFO = {
       ]}
     ]
   },
+  "1.B": {
+    desc: ["Canonical CCSD(T) and its supplements (such as F12), while considered the \u201cgold standard\u201d in computational chemistry, remains out of reach for a foundation-model-scale dataset both in terms of system sizes and numbers of distinct geometries and chemistries to be sampled. Fast, accurate approximations to CCSD(T), including a litany of linear-scaling methods, offer the ability to run on system sizes previously inaccessible to post-MP2 methods, at a modest computational cost. The approximations used, however, are not without their costs, and there are few truly lateral benchmarks in the literature. What benchmarks would help developers of large datasets make well-informed choices about where to spend CPU or GPU dollars, when it comes to approximate methods? What standards should methods be held to, and how should trade-offs in different kinds of errors be made?"],
+    groups: [
+      { h: "Part 1", q: [
+        "Chemical energies span about three orders of magnitude, from vdW and conformers up to covalent bonds. GMTKN55 also covers far more than total energies (\u0394E, barriers, noncovalent interactions). Which properties and energy scales matter most for training and validating MLIPs, and does a single dataset need all of them?",
+        "Pople\u2019s model chemistry requires size consistency and smooth potential energy surfaces. Approximate CC methods can break both, for example with PNO discontinuities along a scan. How much does that hurt force training, and what should consumers check before trusting CC forces?",
+        "Pople\u2019s rule is \u201ccalibrated, not just fitted,\u201d with error bars known before you use the method. What independent benchmark would we need to calibrate the reference method itself before it generates millions of labels? Is GMTKN55, mindless molecules or something new enough?"
+      ]},
+      { h: "Part 2", start: 4, q: [
+        "DFT succeeds \u201cbecause it rarely fails, not because it\u2019s highly accurate.\u201d Should a coupled-cluster dataset for ML be held to the same standard? If so, how do we measure and report robustness, separately from mean error?",
+        "Pople\u2019s model chemistry asks for a frozen method with no tuning for individual systems. Linear-scaling CC approximations like PNO/DLPNO have thresholds that matter. Is \u201cTightPNO-LCCSD(T)-F12b/AVQZ\u201d a properly defined model chemistry, and who decides the settings for a community dataset?",
+        "We have observed that \u201ca few prominent outliers in reference data can very badly influence training.\u201d How should dataset builders find, flag or filter those outliers? Should every label come with an uncertainty or a diagnostic (T1/D1, PNO-truncation error)?"
+      ]}
+    ]
+  },
   "2.A": {
     desc: ["We all agree that we need forces to train an MLIP (do we? Let's ask this!), and we all agree that canonical CCSD(T) forces are too expensive (do we? Let's ask this too!). While reduced-scaling energies are increasingly available (e.g., DEC, CIM, LNO, DLPNO), reduced-scaling forces are less so and often contain noise sources or artifacts from local partition discontinuities. This discussion will be about availability, prospects, and requirements for reduced-scaling implementations of CCSD(T) forces at the scale needed for MLIP training."],
     groups: [
