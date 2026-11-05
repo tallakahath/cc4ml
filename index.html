@@ -39,6 +39,9 @@ header { display: grid; gap: 18px; margin-bottom: 28px; }
 .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
 h1 { font-family: var(--display); font-weight: 700; font-size: clamp(34px, 6vw, 56px); line-height: 1; margin: 0; letter-spacing: -.02em; text-wrap: balance; }
 .sub { color: var(--muted); margin: 0; max-width: 62ch; }
+.venue { margin: -8px 0 0; font-size: 14px; color: var(--muted); }
+.venue a { color: var(--accent); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+.venue a:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .controls { display: grid; gap: 12px; }
 .search { width: 100%; max-width: 520px; font: inherit; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
 .search:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
@@ -124,6 +127,7 @@ h1 { font-family: var(--display); font-weight: 700; font-size: clamp(34px, 6vw, 
 <div class="wrap">
   <header>
     <div class="eyebrow">Coupled cluster for machine learning · November 5–6</div>
+    <p class="venue">Flatiron Institute · <a href="https://www.google.com/maps/search/162+Fifth+Avenue,+New+York,+NY+10010" target="_blank" rel="noopener">162 Fifth Avenue, New York, NY 10010 ↗</a></p>
     <nav class="nav" aria-label="Sections"><a href="#schedule" id="nav-schedule">Schedule</a><a href="#attendees" id="nav-attendees">Attendees</a></nav>
   </header>
   <div id="view-schedule">
